@@ -3,6 +3,11 @@
 #include<stdio.h>
 #include<conio.h>
 #include<time.h>
+#include <windows.h>
+#include "MMSystem.h"
+
+//#include<SDL.h>
+
 
 using namespace std;
 
@@ -73,6 +78,7 @@ int main(){
   char tecla = 0;
   unsigned char *P, *M;
   int TamP, i, x, y, passo = 2;
+  bool song = false;
 
   TamP = imagesize(0, 0, 31, 31);
   P = (unsigned char *)malloc(TamP);
@@ -92,6 +98,7 @@ int main(){
 
   x = 70;
   y = 30;
+  PlaySound(NULL, 0,0);
   while(tecla != ESC) {
    
 
@@ -99,6 +106,33 @@ int main(){
     if(GetKeyState(VK_RIGHT)&0x80) x+=passo;
     if(GetKeyState(VK_UP)&0x80) y-=passo;
     if(GetKeyState(VK_DOWN)&0x80) y+=passo;
+    if(GetKeyState(VK_END)&0x80){
+    	PlaySound(("tada1.wav"), NULL, SND_MEMORY);
+    	printf("end\n");
+    	song = false;
+    	
+    	
+    }	
+    
+    
+    if(GetKeyState(VK_SPACE)&0x80){
+    	if(song == false){
+		
+    	PlaySound(TEXT("tada.wav"), NULL, SND_ASYNC);
+    	song = true;
+    	printf("a\n");
+    	delay(100);
+    	}
+    	else{
+		
+    	PlaySound(NULL,0,0);
+    	song = false;
+    	printf("b\n");
+    	delay(100);
+    	}
+    	
+    	
+	} 
     putimage(x, y, M, AND_PUT);
     putimage(x, y, P, OR_PUT);
     telaUp();
