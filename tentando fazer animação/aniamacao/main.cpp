@@ -11,15 +11,15 @@ using namespace std;
 #define ESC    	27
 #define ENTER   13
 
-int i = 0, nx_1 = 150, ny_1 = 400, size;
+int i = 0, nx_1 = 150, ny_1 = 400, size, passo = 3;
 char t = 0;
 int pg = 0;
 
 void *background;
 
 
-unsigned char *bmp[5];
-unsigned char *mask[5];
+unsigned char *bmp[6];
+unsigned char *mask[6];
 
 
 void PreparaImg(int Tam, unsigned char *Img, unsigned char *Msk) {
@@ -60,7 +60,7 @@ void img()
     getimage(0, 0, 234,224, mask[0]);
     PreparaImg(size, bmp[0], mask[0]);
     cleardevice();
-    printf("t1 %d\n", getactivepage());
+    
     
     //t2
     readimagefile("t2.bmp", 0, 0, 234,224);
@@ -70,7 +70,7 @@ void img()
     getimage(0, 0, 234,224, mask[1]);
     PreparaImg(size, bmp[1], mask[1]);
     cleardevice();
-    printf("t2 %d\n", getactivepage());
+    
     
     //t3
     readimagefile("t3.bmp", 0, 0, 234,224);
@@ -80,7 +80,7 @@ void img()
     getimage(0, 0, 234,224, mask[2]);
     PreparaImg(size, bmp[2], mask[2]);
     cleardevice();
-	printf("t3 %d\n", getactivepage());
+	
     //t4
     readimagefile("t4.bmp", 0, 0, 234,224);
     bmp[3] = (unsigned char *)malloc(size);
@@ -89,7 +89,7 @@ void img()
     getimage(0, 0, 234,224, mask[3]);
     PreparaImg(size, bmp[3], mask[3]);
     cleardevice();
-    printf("t4 %d\n", getactivepage());
+    
     //t5
     readimagefile("t5.bmp", 0, 0, 234,224);
     bmp[4] = (unsigned char *)malloc(size);
@@ -98,7 +98,7 @@ void img()
     getimage(0, 0, 234,224, mask[4]);
     PreparaImg(size, bmp[4], mask[4]);
     cleardevice();
-    printf("t5 %d\n", getactivepage());
+    
     //t6
     readimagefile("t6.bmp", 0, 0, 234,224);
     bmp[5] = (unsigned char *)malloc(size);
@@ -107,7 +107,7 @@ void img()
     getimage(0, 0, 234,224, mask[5]);
     PreparaImg(size, bmp[5], mask[5]);
     cleardevice();
-    printf("t6 %d\n", getactivepage());
+    
 }
 
 
@@ -151,12 +151,12 @@ int main(){
 	  else
 	  i = 0;
 	  
-	  delay(1000);
+	  delay(100);
 
-      if(GetKeyState(VK_LEFT)&0x80)  nx_1 -= 1;
-      if(GetKeyState(VK_RIGHT)&0x80) nx_1 += 1;
-      if(GetKeyState(VK_UP)&0x80)  ny_1 -= 1;
-      if(GetKeyState(VK_DOWN)&0x80) ny_1 += 1;
+      if(GetKeyState(VK_LEFT)&0x80)  nx_1 -= passo;
+      if(GetKeyState(VK_RIGHT)&0x80) nx_1 += passo;
+      if(GetKeyState(VK_UP)&0x80)  ny_1 -= passo;
+      if(GetKeyState(VK_DOWN)&0x80) ny_1 += passo;
       
     }   
 }
