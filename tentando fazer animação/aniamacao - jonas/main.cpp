@@ -11,35 +11,38 @@ using namespace std;
 #define ESC    	27
 #define ENTER   13
 
-int i = 0, size;
+int i = 0, size, Qpiso = 1, Cpiso;
 char t = 0;
 int pg = 0;
 int telaX = 1280, telaY = 700;
 bool pulo = true;
+int Tam = 6;
 
 void *background;
-
 
 unsigned char *bmp[6];
 unsigned char *mask[6];
 unsigned char *chon[2];
 
-
 struct piso{
   double X;
   double Y;
   double passoX;
-  int size;
+  int size;;
 };
+
+struct posi{
+  double mmmmmm;
+};
+
+
 
 struct player{
   double X;
   double Y;
 };
 
-
 void PreparaImg(int Tam, unsigned char *Img, unsigned char *Msk) {
-
   int i;
   unsigned char B, G, R;
   B = Img[24];
@@ -62,10 +65,9 @@ void PreparaImg(int Tam, unsigned char *Img, unsigned char *Msk) {
   }
 }
 
-void img(piso piso)
+void img(piso Piso)
 {
-
-    piso.size = imagesize(0 ,0 ,399, 99);
+    Piso.size = imagesize(0 ,0 ,399, 99);
 	  int size = imagesize(0, 0, 234,224);
     setvisualpage(15);
     setactivepage(16);
@@ -120,78 +122,87 @@ void img(piso piso)
 
     //pisos
     readimagefile("chon.bmp", 0, 0, 399, 99);
-    chon[0] = (unsigned char *)malloc(piso.size);
-    chon[1] = (unsigned char *)malloc(piso.size);
-    getimage(0, 0, 399, 99, chon[0]);
-    getimage(0, 0, 399, 99, chon[1]);
-    PreparaImg(piso.size, chon[0], chon[1]);
-
-
-
+    chon[0] = (unsigned char *)malloc(Piso.size);
+    chon[1] = (unsigned char *)malloc(Piso.size);
+    getimage(0, 0, 399, 30, chon[0]);
+    getimage(0, 0, 399, 30, chon[1]);
+    PreparaImg(Piso.size, chon[0], chon[1]);
 
     cleardevice();
     
 }
 
-
 int main(){
-  piso Piso;
+  int x = 0;
+  piso *Piso;
+  Piso = NULL;
   player Player;
   srand(time(NULL));
-  Piso.X = telaX + 420;
-  Piso.Y = rand() %telaY, 100;
-  Player.X = 150, Player.Y = 400;
-  
+
   initwindow(telaX,telaY);
   setbkcolor(RGB(100,100,100));
-  img(Piso);
+  Player.X = 150, Player.Y = 400;
+
+  Cpiso  =9;
+  Piso = (piso*)realloc(Piso, sizeof(piso)* Cpiso);
   
-  while(true){
+  for(x = 0; x < Tam; x++){
+  Piso[x].X = 10;
+  Piso[x].Y = rand() %telaY, 100;
+  }
+
+  img(Piso[0]);
+  char tecla;
+  while(tecla != ESC){
     if(pg == 2)pg = 1;else pg = 2;
     setactivepage(pg);
     cleardevice();
+
+    //sprite do player
     putimage(Player.X, Player.Y, mask[i], AND_PUT);
     putimage(Player.X, Player.Y, bmp[i], OR_PUT);
 
-    putimage(Piso.X, Piso.Y, chon[1], AND_PUT);
-    putimage(Piso.X, Piso.Y, chon[0], OR_PUT);    
-    i++;
-    lineto(0,400);
-    if(i == 5)i = 0;
-    
+    //sprite do piso
+    putimage(Piso[Cpiso].X, Piso[Cpiso].Y, chon[1], AND_PUT);
+    putimage(Piso[Cpiso].X, Piso[Cpiso].Y, chon[0], OR_PUT);    
+
+    i++; //progride a animação do Player
+    if(i == 5)i = 0; //reseta a animação do player
+
+    for(Cpiso = 0; Cpiso < Tam; Cpiso++) { //Faz o desenhos dos pisos
+      putimage(Piso[Cpiso].X, Piso[Cpiso].Y, chon[1], AND_PUT);
+      putimage(Piso[Cpiso].X, Piso[Cpiso].Y, chon[0], OR_PUT);
+    }
     setvisualpage(pg);
 
     if(GetKeyState(VK_UP)&0x80&&(pulo))Player.Y -=120;
 
-    if(Player.Y <=216) pulo = false;
-    if(Player.Y>=496)pulo = true;//else pulo = false; // 496
+    //faz verificação do player, se esta no chão ou não
+    if(Player.Y <=216)pulo = false; // para pulo
+    if(Player.Y>=496)pulo = true; // deixa pular
+    delay(80); // FPS
 
-    if(Player.Y>=Piso.Y-100 && Player.Y<=Piso.Y+100) Player.Y +=10; //cabeçada no piso
-
-    delay(80);
-
-    Player.Y+=40;
+    Player.Y+=40; // famosa gravidade
 
     if(Player.Y>=telaY-203) Player.Y = telaY-204; //pra n cair do chao
   
-    
-    if(Player.Y+224<=Piso.Y+224 && Player.X+234>=Piso.X ){
-      Player.Y = Piso.Y-200; // segura o player no piso
-
-    } 
-
     if(GetKeyState(VK_LEFT)&0x80)  Player.X -= 20;
     if(GetKeyState(VK_RIGHT)&0x80) Player.X += 20;
     if(GetKeyState(VK_DOWN)&0x80) printf("%d-",Player.Y);
-    Piso.X-=20;
-    if(Piso.X<-320) {
-      Piso.X = telaX + 420;
-      Piso.Y = rand() %telaY, 100;
-
-
-
-      
+    
+    for(Cpiso = 0; Cpiso < Tam; Cpiso++) {
+    Piso[Cpiso].X-=20;// movimentação linear do piso
     }
-    if(GetKeyState(VK_SPACE)&0x80)  delay(500);
+
+    // magica do piso dar a volta
+      for(Cpiso = 0; Cpiso < Tam; Cpiso++) {
+      if(Piso[Cpiso].X<-320) {
+        Piso[Cpiso].X = telaX + 420;
+        Piso[Cpiso].Y = rand() %telaY, 100;
+      }
+      }
+    //delay para testes
+    if(GetKeyState(VK_SPACE)&0x80)delay(900);
+    Tam = 6;
 	}	
 }
