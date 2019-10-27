@@ -1,0 +1,25 @@
+void PreparaImg(int Tam, unsigned char *Img, unsigned char *Msk) {
+// Tam é o tamanho dos ponteiros da imagem e da máscara
+// Img é o ponteiro que aponta para o vetor que contém a imagem capturada com getimage(..)
+// Msk é o ponteiro que será transformado em máscara
+  int i;
+  unsigned char B, G, R;
+  B = Img[24];
+  G = Img[25];
+  R = Img[26];
+  for(i=24; i < Tam; i+=4) {
+    if (Img[i]==B and Img[i+1]==G and Img[i+2]==R) {
+      Img[i] = 0;
+      Img[i+1] = 0;
+      Img[i+2] = 0;
+      Msk[i] = 255;
+      Msk[i+1] = 255;
+      Msk[i+2] = 255;
+    }
+    else {
+      Msk[i] = 0;
+      Msk[i+1] = 0;
+      Msk[i+2] = 0;
+    }
+  }
+}
