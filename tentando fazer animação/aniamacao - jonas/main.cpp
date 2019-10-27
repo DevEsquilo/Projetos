@@ -16,7 +16,8 @@ char t = 0;
 int pg = 0;
 int telaX = 1280, telaY = 700;
 bool pulo = true;
-int Tam = 6;
+int Tam = 11;
+int ALE = 0;
 
 void *background;
 
@@ -30,12 +31,6 @@ struct piso{
   double passoX;
   int size;;
 };
-
-struct posi{
-  double mmmmmm;
-};
-
-
 
 struct player{
   double X;
@@ -143,11 +138,11 @@ int main(){
   setbkcolor(RGB(100,100,100));
   Player.X = 150, Player.Y = 400;
 
-  Cpiso  =9;
-  Piso = (piso*)realloc(Piso, sizeof(piso)* Cpiso);
+  Cpiso  = 9;
+  Piso = (piso*)realloc(Piso, sizeof(piso)* 12);
   
   for(x = 0; x < Tam; x++){
-  Piso[x].X = 10;
+  Piso[x].X = rand() %telaX+750, telaX;
   Piso[x].Y = rand() %telaY, 100;
   }
 
@@ -163,9 +158,10 @@ int main(){
     putimage(Player.X, Player.Y, bmp[i], OR_PUT);
 
     //sprite do piso
+    /*
     putimage(Piso[Cpiso].X, Piso[Cpiso].Y, chon[1], AND_PUT);
     putimage(Piso[Cpiso].X, Piso[Cpiso].Y, chon[0], OR_PUT);    
-
+*/
     i++; //progride a animação do Player
     if(i == 5)i = 0; //reseta a animação do player
 
@@ -191,18 +187,20 @@ int main(){
     if(GetKeyState(VK_DOWN)&0x80) printf("%d-",Player.Y);
     
     for(Cpiso = 0; Cpiso < Tam; Cpiso++) {
-    Piso[Cpiso].X-=20;// movimentação linear do piso
+      Piso[Cpiso].X-=20;// movimentação linear do piso
     }
-
+    ALE = rand()%1000,600;
     // magica do piso dar a volta
       for(Cpiso = 0; Cpiso < Tam; Cpiso++) {
-      if(Piso[Cpiso].X<-320) {
-        Piso[Cpiso].X = telaX + 420;
-        Piso[Cpiso].Y = rand() %telaY, 100;
-      }
+        if(Piso[Cpiso].X<- ALE) {
+          srand(time(NULL));
+          Piso[Cpiso].X = telaX + 500 + rand()%1000;
+          //printf("%d\n", telaX+500);
+          Piso[Cpiso].Y = rand() %telaY, 100;
+        }
       }
     //delay para testes
-    if(GetKeyState(VK_SPACE)&0x80)delay(900);
-    Tam = 6;
+    //if(GetKeyState(VK_SPACE)&0x80)delay(9000);
+    Tam = 11;
 	}	
 }
