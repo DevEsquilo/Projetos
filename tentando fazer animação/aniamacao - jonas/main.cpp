@@ -6,6 +6,10 @@
 #include <string.h>
 #include <time.h>
 
+
+#include <windows.h>
+#include "MMSystem.h"
+
 using namespace std;
 
 #define ESC    	27
@@ -148,7 +152,22 @@ int main(){
 
   img(Piso[0]);
   char tecla;
+
+  
+  // abre o arquivo em mp3 e coloca um apelido nele "bk"  \"nome do aquivo.extensão"\ -> ** quantida de vezes q vai tocar  -> 
+  mciSendString("open \"bk.mp3\" type mpegvideo alias bk", NULL, 0, NULL);
+  
+  PlaySound(NULL, 0,0);
+  
   while(tecla != ESC){
+    //PlaySound(TEXT("bk.mp3"), NULL, SND_ASYNC);
+
+    if(GetKeyState(VK_SPACE)&0x80)
+    mciSendString("play bk", NULL, 0, NULL);
+    
+    if(GetKeyState(VK_END)&0x80)
+    PlaySound(TEXT("sfx.wav"), NULL, SND_ASYNC);
+
     if(pg == 2)pg = 1;else pg = 2;
     setactivepage(pg);
     cleardevice();
@@ -157,11 +176,6 @@ int main(){
     putimage(Player.X, Player.Y, mask[i], AND_PUT);
     putimage(Player.X, Player.Y, bmp[i], OR_PUT);
 
-    //sprite do piso
-    /*
-    putimage(Piso[Cpiso].X, Piso[Cpiso].Y, chon[1], AND_PUT);
-    putimage(Piso[Cpiso].X, Piso[Cpiso].Y, chon[0], OR_PUT);    
-*/
     i++; //progride a animação do Player
     if(i == 5)i = 0; //reseta a animação do player
 

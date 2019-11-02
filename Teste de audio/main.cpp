@@ -1,15 +1,11 @@
-#include<iostream>
-#include<graphics.h>
-#include<stdio.h>
 #include<conio.h>
+#include<graphics.h>
+#include<iostream>
+#include<stdio.h>
 #include<time.h>
 
 #include <windows.h>
 #include "MMSystem.h"
-
-
-//#include<SDL.h>
-
 
 
 using namespace std;
