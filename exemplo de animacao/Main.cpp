@@ -83,7 +83,6 @@ void img()
     getimage(0, 0, 234,224, sombra[2]);
     PreparaImg(size, personagem[2], sombra[2]);
 
-
     cleardevice();// limpa a tela
     
 }
@@ -95,10 +94,7 @@ int main(){
     img(); // chama o metodo de imagem, para ler e preparar as imagens para o jogo
 
     char tecla;
-    int i = 0; // variavel criada para controlar a troca de telas
-
-
-
+    int i = 0; // variavel criada para controlar a troca das imagens do personagem
 
     while(tecla != ESC){
         if(pg == 2)pg = 1;else pg = 2; // explicado na aula do banin, manipula as pg para desenhar e mostrar as coisas na tela

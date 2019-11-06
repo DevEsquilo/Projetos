@@ -30,9 +30,9 @@ unsigned char *mask[6];
 unsigned char *chon[2];
 
 struct piso{
-  double X;
-  double Y;
-  double passoX;
+  int X;
+  int Y;
+  int passoX;
   int size;;
 };
 
@@ -140,7 +140,7 @@ int main(){
 
   initwindow(telaX,telaY);
   setbkcolor(RGB(100,100,100));
-  Player.X = 150, Player.Y = 400;
+  Player.X = 300, Player.Y = 400;
 
   Cpiso  = 9;
   Piso = (piso*)realloc(Piso, sizeof(piso)* 12);
@@ -162,8 +162,8 @@ int main(){
   while(tecla != ESC){
     //PlaySound(TEXT("bk.mp3"), NULL, SND_ASYNC);
 
-    if(GetKeyState(VK_SPACE)&0x80)
-    mciSendString("play bk", NULL, 0, NULL);
+    //if(GetKeyState(VK_SPACE)&0x80)
+    //mciSendString("play bk", NULL, 0, NULL);
     
     if(GetKeyState(VK_END)&0x80)
     PlaySound(TEXT("sfx.wav"), NULL, SND_ASYNC);
@@ -195,6 +195,20 @@ int main(){
     Player.Y+=40; // famosa gravidade
 
     if(Player.Y>=telaY-203) Player.Y = telaY-204; //pra n cair do chao
+	for(Cpiso = 0; Cpiso < Tam; Cpiso++) {
+    	if(Player.Y >=Piso[Cpiso].Y && Player.X >= Piso[Cpiso].X){
+      	Player.Y = Piso[Cpiso].Y-234;  
+    	}
+    	else if (Player.X> Piso[Cpiso].X+245)
+    	{
+      	Player.Y -=20;
+    	}
+	}
+
+    // if piso y >= player Y E player X >= piso x ====== player y = piso y
+    //else break
+
+
   
     if(GetKeyState(VK_LEFT)&0x80)  Player.X -= 20;
     if(GetKeyState(VK_RIGHT)&0x80) Player.X += 20;
@@ -203,18 +217,20 @@ int main(){
     for(Cpiso = 0; Cpiso < Tam; Cpiso++) {
       Piso[Cpiso].X-=20;// movimentação linear do piso
     }
-    ALE = rand()%1000,600;
+    ALE = rand()%1000,900;
+    //printf("%d\n", ALE);
     // magica do piso dar a volta
-      for(Cpiso = 0; Cpiso < Tam; Cpiso++) {
-        if(Piso[Cpiso].X<- ALE) {
-          srand(time(NULL));
-          Piso[Cpiso].X = telaX + 500 + rand()%1000;
-          //printf("%d\n", telaX+500);
-          Piso[Cpiso].Y = rand() %telaY, 100;
-        }
+    for(Cpiso = 0; Cpiso < Tam; Cpiso++) {
+      if(Piso[Cpiso].X<= -ALE) {
+        srand(time(NULL));
+        Piso[Cpiso].X = telaX + 500 + rand()%1000;
+        //printf("%d\n", telaX+500);
+        Piso[Cpiso].Y = rand() % telaY , 100;
+        printf("%d\n",Piso[Cpiso].Y );
       }
+    }
     //delay para testes
-    //if(GetKeyState(VK_SPACE)&0x80)delay(9000);
+    if(GetKeyState(VK_SPACE)&0x80)delay(9000);
     Tam = 11;
 	}	
 }
