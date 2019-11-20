@@ -84,7 +84,7 @@ void img(piso Piso)
     setactivepage(16);
 
     //t1
-    readimagefile("t1.bmp", 0, 0, 234,224);
+    readimagefile(".\\assets\\t1.bmp", 0, 0, 234,224);
     bmp[0] = (unsigned char *)malloc(size);
     mask[0] = (unsigned char *)malloc(size);
     getimage(0, 0, 234,224, bmp[0]);
@@ -92,7 +92,7 @@ void img(piso Piso)
     PreparaImg(size, bmp[0], mask[0]);
     
     //t2
-    readimagefile("t2.bmp", 0, 0, 234,224);
+    readimagefile(".\\assets\\t2.bmp", 0, 0, 234,224);
     bmp[1] = (unsigned char *)malloc(size);
     mask[1] = (unsigned char *)malloc(size);
     getimage(0, 0, 234,224, bmp[1]);
@@ -100,7 +100,7 @@ void img(piso Piso)
     PreparaImg(size, bmp[1], mask[1]);
     
     //t3
-    readimagefile("t3.bmp", 0, 0, 234,224);
+    readimagefile(".\\assets\\t3.bmp", 0, 0, 234,224);
     bmp[2] = (unsigned char *)malloc(size);
     mask[2] = (unsigned char *)malloc(size);
     getimage(0, 0, 234,224, bmp[2]);
@@ -108,7 +108,7 @@ void img(piso Piso)
     PreparaImg(size, bmp[2], mask[2]);
 	  
     //t4
-    readimagefile("t4.bmp", 0, 0, 234,224);
+    readimagefile(".\\assets\\t4.bmp", 0, 0, 234,224);
     bmp[3] = (unsigned char *)malloc(size);
     mask[3] = (unsigned char *)malloc(size);
     getimage(0, 0, 234,224, bmp[3]);
@@ -118,7 +118,7 @@ void img(piso Piso)
     cleardevice();
 
     //t5
-    readimagefile("t5.bmp", 0, 0, 234,224);
+    readimagefile(".\\assets\\t5.bmp", 0, 0, 234,224);
     bmp[4] = (unsigned char *)malloc(size);
     mask[4] = (unsigned char *)malloc(size);
     getimage(0, 0, 234,224, bmp[4]);
@@ -126,7 +126,7 @@ void img(piso Piso)
     PreparaImg(size, bmp[4], mask[4]);
     
     //t6
-    readimagefile("t6.bmp", 0, 0, 234,224);
+    readimagefile(".\\assets\\t6.bmp", 0, 0, 234,224);
     bmp[5] = (unsigned char *)malloc(size);
     mask[5] = (unsigned char *)malloc(size);
     getimage(0, 0, 234,224, bmp[5]);
@@ -134,7 +134,7 @@ void img(piso Piso)
     PreparaImg(size, bmp[5], mask[5]);
 
     //pisos
-    readimagefile("chon.bmp", 0, 0, 399, 99);
+    readimagefile(".\\assets\\chon.bmp", 0, 0, 399, 99);
     chon[0] = (unsigned char *)malloc(Piso.size);
     chon[1] = (unsigned char *)malloc(Piso.size);
     getimage(0, 0, 399, 30, chon[0]);
@@ -143,11 +143,11 @@ void img(piso Piso)
 
     cleardevice();
 
-    readimagefile("fundo.bmp", 0, 0, 1366, 768);
+    readimagefile(".\\assets\\fundo.bmp", 0, 0, 1366, 768);
     bk = (void *)malloc(sizebk);
     getimage(0, 0, 1366, 768, bk);
 
-    readimagefile("menu.bmp", 0, 0, 1366, 768);
+    readimagefile(".\\assets\\menu.bmp", 0, 0, 1366, 768);
     menu = (void*)malloc(sizebk);
     getimage(0, 0, 1366, 768, menu);
 
@@ -207,16 +207,15 @@ int main(){
 
   
   // abre o arquivo em mp3 e coloca um apelido nele "bk"  \"nome do aquivo.extensão"\ -> ** quantida de vezes q vai tocar  -> 
-  mciSendString("open \"bk.mp3\" type mpegvideo alias bk", NULL, 0, NULL);
-  
+  mciSendString("open .\\sons\\bk.mp3 type mpegvideo alias bk", NULL, 10, NULL);
+
   PlaySound(NULL, 0,0);
   ALE = 900+ (rand()%101);
   
   while(1){
     teclado();
-  	
-
-    pausa();
+  	pausa();
+    mciSendString("play bk notify repeat", NULL, 0 ,0);
 
     if(pg == 2)pg = 1;else pg = 2;
     setactivepage(pg);
@@ -274,6 +273,8 @@ int main(){
       }
     }
     if(GetKeyState(VK_END)&0x80)break;
+    
+    //if(collisao) sndPlaySound(".\\sons\\morte.wav", SND_ASYNC);
     Tam = 11;
 	}	
 }
