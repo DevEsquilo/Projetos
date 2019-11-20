@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-
+#include <math.h>
 
 #include <windows.h>
 #include "MMSystem.h"
@@ -14,14 +14,20 @@ using namespace std;
 
 #define ESC    	27
 #define ENTER   13
-
 int i = 0, size, Qpiso = 1, Cpiso;
 char t = 0;
 int pg = 0;
-int telaX = 1280, telaY = 700;
+//int telaX = 1280, telaY = 700;
 bool pulo = true;
+bool pause = true;
 int Tam = 11;
 int ALE = 0;
+int altura = 224;
+int largura = 234;
+int largurachao = 400;
+int tela = (1366, 768);
+
+char tecla;
 
 void *background;
 
@@ -29,16 +35,19 @@ unsigned char *bmp[6];
 unsigned char *mask[6];
 unsigned char *chon[2];
 
+void *bk;
+void *menu;
+
+
+struct player{
+  int X;
+  int Y;
+};
 struct piso{
   int X;
   int Y;
   int passoX;
   int size;;
-};
-
-struct player{
-  double X;
-  double Y;
 };
 
 void PreparaImg(int Tam, unsigned char *Img, unsigned char *Msk) {
@@ -68,6 +77,9 @@ void img(piso Piso)
 {
     Piso.size = imagesize(0 ,0 ,399, 99);
 	  int size = imagesize(0, 0, 234,224);
+
+    int sizebk = imagesize(0,0,1366, 768);
+    
     setvisualpage(15);
     setactivepage(16);
 
@@ -103,6 +115,8 @@ void img(piso Piso)
     getimage(0, 0, 234,224, mask[3]);
     PreparaImg(size, bmp[3], mask[3]);
     
+    cleardevice();
+
     //t5
     readimagefile("t5.bmp", 0, 0, 234,224);
     bmp[4] = (unsigned char *)malloc(size);
@@ -128,18 +142,56 @@ void img(piso Piso)
     PreparaImg(Piso.size, chon[0], chon[1]);
 
     cleardevice();
-    
+
+    readimagefile("fundo.bmp", 0, 0, 1366, 768);
+    bk = (void *)malloc(sizebk);
+    getimage(0, 0, 1366, 768, bk);
+
+    readimagefile("menu.bmp", 0, 0, 1366, 768);
+    menu = (void*)malloc(sizebk);
+    getimage(0, 0, 1366, 768, menu);
+
+    cleardevice();
 }
 
+
+void teclado()
+{
+  fflush(stdin);
+  if(kbhit()){
+    int key = getch();
+    if(key == VK_ESCAPE) pause = !pause;
+  }
+}
+
+void pausa()
+{
+  while(pause){
+    putimage(0, 0, menu, 0);
+    teclado();
+  }
+}
+
+
+
 int main(){
+  int Size;
   int x = 0;
   piso *Piso;
   Piso = NULL;
   player Player;
-  srand(time(NULL));
 
-  initwindow(telaX,telaY);
+
+  srand(time(NULL));
+  DWORD telaX = GetSystemMetrics(SM_CXSCREEN);
+  DWORD telaY = GetSystemMetrics(SM_CYSCREEN);
+
+  initwindow(telaX,telaY,"",-3,-3);
+  
+  
   setbkcolor(RGB(100,100,100));
+  //putimage(0,0,bk,0);
+
   Player.X = 300, Player.Y = 400;
 
   Cpiso  = 9;
@@ -151,86 +203,77 @@ int main(){
   }
 
   img(Piso[0]);
-  char tecla;
+  //char tecla;
 
   
   // abre o arquivo em mp3 e coloca um apelido nele "bk"  \"nome do aquivo.extensão"\ -> ** quantida de vezes q vai tocar  -> 
   mciSendString("open \"bk.mp3\" type mpegvideo alias bk", NULL, 0, NULL);
   
   PlaySound(NULL, 0,0);
+  ALE = 900+ (rand()%101);
   
-  while(tecla != ESC){
-    //PlaySound(TEXT("bk.mp3"), NULL, SND_ASYNC);
+  while(1){
+    teclado();
+  	
 
-    //if(GetKeyState(VK_SPACE)&0x80)
-    //mciSendString("play bk", NULL, 0, NULL);
-    
-    if(GetKeyState(VK_END)&0x80)
-    PlaySound(TEXT("sfx.wav"), NULL, SND_ASYNC);
+    pausa();
 
     if(pg == 2)pg = 1;else pg = 2;
     setactivepage(pg);
     cleardevice();
 
-    //sprite do player
+    
+    //Fundo da tela
+    putimage(0, 0, bk, 0);
+
+    //desenha os chaos
+    for(Cpiso = 0; Cpiso < Tam; Cpiso++) { //Faz o desenhos dos pisos
+          putimage(Piso[Cpiso].X, Piso[Cpiso].Y, chon[1], AND_PUT);
+          putimage(Piso[Cpiso].X, Piso[Cpiso].Y, chon[0], OR_PUT);
+    }
+    //desenha o personagem
     putimage(Player.X, Player.Y, mask[i], AND_PUT);
     putimage(Player.X, Player.Y, bmp[i], OR_PUT);
-
+    
     i++; //progride a animação do Player
     if(i == 5)i = 0; //reseta a animação do player
-
-    for(Cpiso = 0; Cpiso < Tam; Cpiso++) { //Faz o desenhos dos pisos
-      putimage(Piso[Cpiso].X, Piso[Cpiso].Y, chon[1], AND_PUT);
-      putimage(Piso[Cpiso].X, Piso[Cpiso].Y, chon[0], OR_PUT);
-    }
+    
     setvisualpage(pg);
 
     if(GetKeyState(VK_UP)&0x80&&(pulo))Player.Y -=120;
 
     //faz verificação do player, se esta no chão ou não
-    if(Player.Y <=216)pulo = false; // para pulo
     if(Player.Y>=496)pulo = true; // deixa pular
     delay(80); // FPS
 
-    Player.Y+=40; // famosa gravidade
+    Player.Y+=50; // famosa gravidade
 
     if(Player.Y>=telaY-203) Player.Y = telaY-204; //pra n cair do chao
-	for(Cpiso = 0; Cpiso < Tam; Cpiso++) {
-    	if(Player.Y >=Piso[Cpiso].Y && Player.X >= Piso[Cpiso].X){
-      	Player.Y = Piso[Cpiso].Y-234;  
-    	}
-    	else if (Player.X> Piso[Cpiso].X+245)
-    	{
-      	Player.Y -=20;
-    	}
-	}
-
-    // if piso y >= player Y E player X >= piso x ====== player y = piso y
-    //else break
-
-
-  
+    
+    //movimentação do personagem em cima do piso
+    for(Cpiso = 0; Cpiso <= Tam; Cpiso++) {
+      if(Player.Y+altura <= Piso[Cpiso].Y && Player.X+largura >= Piso[Cpiso].X){
+        Player.Y = Piso[Cpiso].Y-altura;
+        if(Player.X >= Piso[Cpiso].X+largura){
+          //Player.Y-=10;
+        }
+      }
+    }
+    
     if(GetKeyState(VK_LEFT)&0x80)  Player.X -= 20;
     if(GetKeyState(VK_RIGHT)&0x80) Player.X += 20;
-    if(GetKeyState(VK_DOWN)&0x80) printf("%d-",Player.Y);
     
-    for(Cpiso = 0; Cpiso < Tam; Cpiso++) {
-      Piso[Cpiso].X-=20;// movimentação linear do piso
-    }
-    ALE = rand()%1000,900;
-    //printf("%d\n", ALE);
+    for(Cpiso = 0; Cpiso < Tam; Cpiso++)Piso[Cpiso].X-=20;// movimentação linear do piso
+    
     // magica do piso dar a volta
     for(Cpiso = 0; Cpiso < Tam; Cpiso++) {
       if(Piso[Cpiso].X<= -ALE) {
         srand(time(NULL));
         Piso[Cpiso].X = telaX + 500 + rand()%1000;
-        //printf("%d\n", telaX+500);
-        Piso[Cpiso].Y = rand() % telaY , 100;
-        printf("%d\n",Piso[Cpiso].Y );
+        Piso[Cpiso].Y = 250+rand() % 519;
       }
     }
-    //delay para testes
-    if(GetKeyState(VK_SPACE)&0x80)delay(9000);
+    if(GetKeyState(VK_END)&0x80)break;
     Tam = 11;
 	}	
 }
