@@ -12,6 +12,7 @@ unsigned char *T1, *T1M,*T2, *T2M, *T3, *T4;
 char tecla;
 int pg = 1;
 
+
 void PreparaImg(int Tam, unsigned char *Img, unsigned char *Msk) {
 // Tam é o tamanho dos ponteiros da imagem e da máscara
 // Img é o ponteiro que aponta para o vetor que contém a imagem capturada com getimage(..)
@@ -46,6 +47,7 @@ struct fisica{
 struct coords{
 	int x,y;
 };
+coords plat[20], F, centro[20], B1, B2;
 
 bool onGround(int fy){
 	if (fy + 100 <= 480){
@@ -58,7 +60,7 @@ bool onGround(int fy){
 
 void desenho(){
 	int Tam = imagesize(0, 0, 49, 49);
-	int Tam2 = imagesize(0, 0, 199, 112);
+	int Tam2 = imagesize(0, 0, 229, 99);
 	int Tam3 = imagesize(0,0,1279,133);
 	int Tam4 = imagesize(0,0,1999,799);
   	T1 = (unsigned char *)malloc(Tam);
@@ -79,10 +81,8 @@ void desenho(){
   	PreparaImg(Tam, T1, T1M);
   	cleardevice();
   	
-  	readimagefile("plataforma.bmp", 0, 0, 199, 112);
-  	getimage(0, 0, 199, 112, T2); // captura para o ponteiro P
-    getimage(0, 0, 199, 112, T2M);
-  	PreparaImg(Tam2, T2, T2M);
+  	readimagefile("plataforma_rect.bmp", 0, 0, 229, 99);
+  	getimage(0, 0, 229, 99, T2); // captura para o ponteiro P
   	cleardevice();
   	
   	readimagefile("chao.bmp", 0,0,1279,133);
@@ -94,13 +94,30 @@ void desenho(){
   	cleardevice();
 }
 
+void criaPlat() {
+	for (int i=0;i<10;i++){
+		plat[i].x=rand()%1920;
+    	plat[i].y=rand()%600;
+      }
+    for (int i=0;i<10;i++){
+    	for (int j=0;j<10;j++){
+    		if (j==i) j++;
+			if ((plat[j].x <= plat[i].x <= plat[j].x + 230) && (plat[j].y <= plat[i].y <= plat[j].y +100)){
+				plat[i].x=rand()%1920;
+    			plat[i].y=rand()%600;
+			}
+		}
+		
+	}
+}
+
 int main()  { 
 	initwindow(1920, 800);
 	srand(time(0));
-	coords plat[20], F, centro[20], B1, B2;
 	
 	bool onAir = true;
 	bool onCollision = false;
+	bool grudado = false;
 	F.x = 10;
 	F.y = 10;
 	
@@ -108,13 +125,8 @@ int main()  {
 //	B2.x = 2000;
 	
 	//Define localização das plataformas e do centro de cada uma
-	for (int i=0;i<10;i++)
-      {
-       plat[i].x=rand()%1920;
-       plat[i].y=rand()%600;
-       centro[i].x = plat[i].x + 100;
-       centro[i].y = plat[i].y + 55;
-      }
+	criaPlat();
+
 	
 	int h=300;
     float dx=3,dy=0;
@@ -131,6 +143,7 @@ int main()  {
 		cleardevice();
 		
 		setbkcolor(WHITE);
+		
 		//Background e sua movimentação
 //		putimage(B1.x,0,T4, AND_PUT);
 //		putimage(B1.x,0,T4, OR_PUT);
@@ -149,31 +162,42 @@ int main()  {
 		
 		
 		
-		//Gravidade do personagem
-		dx = 3;
-		if (onAir){
-			dy+=0.5;
-    		F.y+=dy;
-    }
+		//Gravidade do personagem		
+		dy+=0.5;
+    	F.y+=dy;
+    	
+    	if (F.y >= 700)
+    	F.y = 700;
     	
     	//Movimentação do personagem
     	if(GetKeyState(VK_RIGHT)&0x80) F.x += dx;
     	if(GetKeyState(VK_LEFT)&0x80) F.x -= dx;
-    	if (F.y>667 || (GetKeyState(VK_SPACE)&0x80))  dy=-10;
+    	if(GetKeyState(VK_UP)&0x80) printf("%d", dy);
+    	if (GetKeyState(VK_SPACE)&0x80)  dy=-10;
 
 		//Cria novas plataformas		
 		for (int i=0;i<10;i++){
-			if (centro[i].x + 73 < 0){
-				plat[i].x= 1920;
-				plat[i].y=rand()%600;
-				centro[i].x = plat[i].x + 100;
-       			centro[i].y = plat[i].y + 55;
+			if (plat[i].x + 230 < 0){
+				for (int i=0;i<10;i++){
+					plat[i].x=1920;
+    				plat[i].y=rand()%600;
+    				for (int j=0;j<10;j++){
+    					if (j==i) j++;
+						if ((plat[j].x <= plat[i].x <= plat[j].x + 230) && (plat[j].y <= plat[i].y <= plat[j].y +100)){
+							plat[i].x=1920;
+    						plat[i].y=rand()%600;
+			
+						}
+		
+					}
+			}
 			}
 		}
 		
 		//Colisão com o topo das plataformas
     	for (int i=0;i<10;i++){
-     		if ((F.x+50>centro[i].x-73) && (F.x+25<centro[i].x+73) && (F.y+50>centro[i].y-28 ) && (F.y+25<plat[i].y+28) && (dy>0)){
+     		if ((F.x+45>plat[i].x) && (F.x+15<plat[i].x+230) && (F.y+50>plat[i].y ) && (F.y+25<plat[i].y+100) && (dy>0)){
+      			F.y = plat[i].y -50;
       			dy = 0;
 			  }
 					
@@ -181,41 +205,35 @@ int main()  {
       	
       	//Colisão com a base das plataformas
       	for (int i=0;i<10;i++){
-      		if ((F.y <= centro[i].y+28 && (F.x+50>centro[i].x-73) && (F.x<centro[i].x+73)) && (dy<0) ){
-      			dy=1;
+      		if ((F.y <= plat[i].y+100 && (F.x+50>plat[i].x) && (F.x<plat[i].x+230)) && (dy<0) ){
+      			
 			  }
       		
 		  }
 		
 		//Colisão com a borda da plataforma
 		for (int i=0;i<10;i++){
-			if ((F.x + 50 > centro[i].x-73) && (F.x < centro[i].x+73) && (F.y > centro[i].y - 28) && (F.y < centro[i].y+28)){
-				dx = -3;
-				printf("A");
-//				printf("X do Cubo: %d\n", F.x);
-//				printf("Y do Cubo: %d\n", F.y);
-//				printf("X da Plataforma: %d\n", plat[i].x);
-//				printf("Y da Plataforma: %d\n", plat[i].y);
+			if ((F.x + 50 > plat[i].x) && (F.x < plat[i].x+230) && (F.y > plat[i].y) && (F.y < plat[i].y+100)){
+				F.x = plat[i].x - 50;
 			}
-			else 
-			dx = 3;
+
 		}
+		
 		
 		
     	//Desenho das plataformas
     	for (int i=0;i<10;i++)
     	{
-    		putimage(plat[i].x,plat[i].y,T2M, AND_PUT);
+    		putimage(plat[i].x,plat[i].y,T2, AND_PUT);
     		putimage(plat[i].x,plat[i].y,T2, OR_PUT);
     	
 	    }
 	    //Movimentação das plataformas para a direita
-	    for (int i=0;i<10;i++)
-    	{
-    		plat[i].x -= 5;
-    		centro[i].x -=5;
-
-	    }
+//	    for (int i=0;i<10;i++)
+//    	{
+//    		plat[i].x -= 5;
+//
+//	    }
 	    
 		//Desenho do chão
 		putimage(0,700,T3, AND_PUT);
