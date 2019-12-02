@@ -31,12 +31,15 @@ int tela = (1366, 768);
 
 char tecla;
 
-void *background;
 
-unsigned char *bmp[6];
+unsigned char *correr[6];
 unsigned char *mask[6];
+unsigned char *pular[4];
+unsigned char *maskP[4];
+
 unsigned char *chon[2];
 
+void *background;
 void *bk;
 void *menu;
 
@@ -47,6 +50,18 @@ DWORD telaY = GetSystemMetrics(SM_CYSCREEN);
 
 POINT P;
 HWND janela;
+
+//Falas
+  char *falas[] = {
+    (char*)"Jogar", 
+    (char*)"Opcoes", 
+    (char*)"Sair"
+    };
+  char *fintro[] = {
+    (char*)"Samuel cara de pastel pecou gravemente, e o grande",
+    (char*)"uma pena... e seu coracao, era mais pesado",
+    (char*)"Anubis veio lhe julgar, pesando o seu coracao com"
+    };
 
 struct player{
   int X;
@@ -90,66 +105,88 @@ void PreparaImg(int Tam, unsigned char *Img, unsigned char *Msk)
 
 void img(piso Piso)
 {
-  Piso.size = imagesize(0 ,0 ,399, 99);
+  Piso.size = imagesize(0 ,0 ,400, 151);
   int size = imagesize(0, 0, 234,224);
   int sizebk = imagesize(0,0,1366, 768);
 
-  //t1
-  readimagefile(".\\assets\\t1.bmp", 0, 0, 234,224);
-  bmp[0] = (unsigned char *)malloc(size);
+  //correr1
+  readimagefile(".\\assets\\correr1.bmp", 0, 0, 234,224);
+  correr[0] = (unsigned char *)malloc(size);
   mask[0] = (unsigned char *)malloc(size);
-  getimage(0, 0, 234,224, bmp[0]);
+  getimage(0, 0, 234,224, correr[0]);
   getimage(0, 0, 234,224, mask[0]);
-  PreparaImg(size, bmp[0], mask[0]);
+  PreparaImg(size, correr[0], mask[0]);
 
-  //t2
-  readimagefile(".\\assets\\t2.bmp", 0, 0, 234,224);
-  bmp[1] = (unsigned char *)malloc(size);
+  //correr2
+  readimagefile(".\\assets\\correr2.bmp", 0, 0, 234,224);
+  correr[1] = (unsigned char *)malloc(size);
   mask[1] = (unsigned char *)malloc(size);
-  getimage(0, 0, 234,224, bmp[1]);
+  getimage(0, 0, 234,224, correr[1]);
   getimage(0, 0, 234,224, mask[1]);
-  PreparaImg(size, bmp[1], mask[1]);
+  PreparaImg(size, correr[1], mask[1]);
 
-  //t3
-  readimagefile(".\\assets\\t3.bmp", 0, 0, 234,224);
-  bmp[2] = (unsigned char *)malloc(size);
+  //correr3
+  readimagefile(".\\assets\\correr3.bmp", 0, 0, 234,224);
+  correr[2] = (unsigned char *)malloc(size);
   mask[2] = (unsigned char *)malloc(size);
-  getimage(0, 0, 234,224, bmp[2]);
+  getimage(0, 0, 234,224, correr[2]);
   getimage(0, 0, 234,224, mask[2]);
-  PreparaImg(size, bmp[2], mask[2]);
-
+  PreparaImg(size, correr[2], mask[2]);
   
-  //t4
-  readimagefile(".\\assets\\t4.bmp", 0, 0, 234,224);
-  bmp[3] = (unsigned char *)malloc(size);
+  //correr4
+  readimagefile(".\\assets\\correr4.bmp", 0, 0, 234,224);
+  correr[3] = (unsigned char *)malloc(size);
   mask[3] = (unsigned char *)malloc(size);
-  getimage(0, 0, 234,224, bmp[3]);
+  getimage(0, 0, 234,224, correr[3]);
   getimage(0, 0, 234,224, mask[3]);
-  PreparaImg(size, bmp[3], mask[3]);
-  
+  PreparaImg(size, correr[3], mask[3]);
 
-  //t5
-  readimagefile(".\\assets\\t5.bmp", 0, 0, 234,224);
-  bmp[4] = (unsigned char *)malloc(size);
+  //correr5
+  readimagefile(".\\assets\\correr5.bmp", 0, 0, 234,224);
+  correr[4] = (unsigned char *)malloc(size);
   mask[4] = (unsigned char *)malloc(size);
-  getimage(0, 0, 234,224, bmp[4]);
+  getimage(0, 0, 234,224, correr[4]);
   getimage(0, 0, 234,224, mask[4]);
-  PreparaImg(size, bmp[4], mask[4]);
+  PreparaImg(size, correr[4], mask[4]);
   
-  //t6
-  readimagefile(".\\assets\\t6.bmp", 0, 0, 234,224);
-  bmp[5] = (unsigned char *)malloc(size);
+  //correr6
+  readimagefile(".\\assets\\correr6.bmp", 0, 0, 234,224);
+  correr[5] = (unsigned char *)malloc(size);
   mask[5] = (unsigned char *)malloc(size);
-  getimage(0, 0, 234,224, bmp[5]);
+  getimage(0, 0, 234,224, correr[5]);
   getimage(0, 0, 234,224, mask[5]);
-  PreparaImg(size, bmp[5], mask[5]);
+  PreparaImg(size, correr[5], mask[5]);
+
+  //pulo1
+  readimagefile(".\\assets\\pulo1.bmp", 0, 0, 234,224);
+  pular[4] = (unsigned char *)malloc(size);
+  maskP[4] = (unsigned char *)malloc(size);
+  getimage(0, 0, 234,224, pular[4]);
+  getimage(0, 0, 234,224, maskP[4]);
+  PreparaImg(size, pular[4], maskP[4]);
+
+  //pulo2
+  readimagefile(".\\assets\\pulo2.bmp", 0, 0, 234,224);
+  pular[4] = (unsigned char *)malloc(size);
+  maskP[4] = (unsigned char *)malloc(size);
+  getimage(0, 0, 234,224, pular[4]);
+  getimage(0, 0, 234,224, maskP[4]);
+  PreparaImg(size, pular[4], maskP[4]);
+
+  //pulo3
+  readimagefile(".\\assets\\pulo3.bmp", 0, 0, 234,224);
+  pular[4] = (unsigned char *)malloc(size);
+  maskP[4] = (unsigned char *)malloc(size);
+  getimage(0, 0, 234,224, pular[4]);
+  getimage(0, 0, 234,224, maskP[4]);
+  PreparaImg(size, pular[4], maskP[4]);
 
   //pisos
-  readimagefile(".\\assets\\chon.bmp", 0, 0, 399, 99);
+  readimagefile(".\\assets\\plataforma1.bmp", 0, 0, 400, 151);
   chon[0] = (unsigned char *)malloc(Piso.size);
   chon[1] = (unsigned char *)malloc(Piso.size);
-  getimage(0, 0, 399, 30, chon[0]);
-  getimage(0, 0, 399, 30, chon[1]);
+  getimage(0, 0, 399, 150, chon[0]);
+  getimage(0, 0, 399, 150, chon[1]);
   PreparaImg(Piso.size, chon[0], chon[1]);
 
 
@@ -178,20 +215,20 @@ void pausa()
   if(pause){
     int tamBar, Y1 = telaY/2 - telaY/10, Y2, Y3, XT = telaX/3, YT = telaX/3 + telaX/3,textoMeio = XT+20+(XT/3);
     tamBar = telaX/19;
-    printf("%d",tamBar);
+    //printf("%d",tamBar);
     putimage(0, 0, menu, 0);
-    outtextxy(telaX/4,telaY/6,"TA NA TELA DE PAUSA POHAN");
+    //outtextxy(telaX/4,telaY/6,(char*)"TA NA TELA DE PAUSA POHAN");
     setcolor(0);
     
     setfillstyle(1, RGB(194,178,128));
     bar(XT, Y1 , YT, Y1 +tamBar);
-    outtextxy(textoMeio+8, Y1 + (Y1 /11), "Jogar");
-    setfillstyle(1, RGB(194,178,140));
+    outtextxy(textoMeio+8, Y1 + (Y1 /11), falas[0]);
+    setfillstyle(1, RGB(194,178,128));
     bar(XT, Y1 + tamBar+14, YT, Y1 + tamBar * 2 + 10);
-    outtextxy(textoMeio-8, Y1+ tamBar+10 + (Y1 / 11) , "Opcoes");
-    setfillstyle(1, RGB(194,178,150));
+    outtextxy(textoMeio-8, Y1+ tamBar+10 + (Y1 / 11) , falas[1]);
+    setfillstyle(1, RGB(194,178,128));
     bar(XT, 20 + Y1 + tamBar*2, YT, Y1 +tamBar*3 + 10);
-    outtextxy(textoMeio+19, Y1+ tamBar*2+10 + (Y1 / 11), "Sair");
+    outtextxy(textoMeio+19, Y1+ tamBar*2+10 + (Y1 / 11), falas[2]);
 
     while(pause){
       if(GetKeyState(VK_END)&0x80){pause = false; break;}
@@ -208,17 +245,17 @@ void intro()
     cleardevice();
     if(passo3 == true)amiga = false;
 
-    outtextxy(telaX/6,telaY/6,"Samuel cara de pastel pecou gravemente, e o grande");
+    outtextxy(telaX/6,telaY/6,fintro[0]);
     delay(800);
     
     if(passo2){
-      outtextxy(telaX/6,telaY/6+140,"uma pena... e seu coracao, era mais pesado");
+      outtextxy(telaX/6,telaY/6+140,fintro[1]);
       passo3 = true;
       delay(800);
     }
     
     if(passo1){
-      outtextxy(telaX/6,telaY/6+70,"Anubis veio lhe julgar, pesando o seu coracao com");
+      outtextxy(telaX/6,telaY/6+70,fintro[2]);
       delay(800);
       passo2 = true;
     }
@@ -248,7 +285,7 @@ int main(){
 
   initwindow(telaX,telaY,"",-3,-3);
   
-  setbkcolor(RGB(100,100,100));
+  setbkcolor(RGB(195,195,195));
   
   Player.X = 300, Player.Y = 400;
 
@@ -273,13 +310,14 @@ int main(){
   PlaySound(NULL, 0,0);
   ALE = 900+ (rand()%101);
   settextstyle(TRIPLEX_FONT, HORIZ_DIR,20);
-  //intro();
+  intro();
   cleardevice();
   
   while(1){
-    
+    setbkcolor(RGB(194,178,128));
     teclado();
   	pausa();
+    setbkcolor(RGB(195,195,195));
     mciSendString("play bk notify repeat", NULL, 0 ,0);
     if(GetKeyState(VK_SPACE)&0x80) {
       mciSendString("stop som", NULL, 0, 0);    // p�ra a reprodu��o do alias fundo
@@ -290,7 +328,7 @@ int main(){
     if(pg == 2)pg = 1;else pg = 2;
     setactivepage(pg);
     cleardevice();
-
+/*
     //Fundo da tela
     putimage(bkg.X0, 0, bk, 0);
     putimage(bkg.X1, 0, bk, 0);
@@ -298,7 +336,7 @@ int main(){
     bkg.X1-=4;
     if(bkg.X0 + bkg.largura <= 5)bkg.X0 = bkg.largura;
     if(bkg.X1 + bkg.largura <= 5)bkg.X1 = bkg.largura;
-
+*/
     //desenha os chaos
     for(Cpiso = 0; Cpiso < Tam; Cpiso++) { //Faz o desenhos dos pisos
       putimage(Piso[Cpiso].X, Piso[Cpiso].Y, chon[1], AND_PUT);
@@ -307,7 +345,7 @@ int main(){
 
     //desenha o personagem
     putimage(Player.X, Player.Y, mask[i], AND_PUT);
-    putimage(Player.X, Player.Y, bmp[i], OR_PUT);
+    putimage(Player.X, Player.Y, correr[i], OR_PUT);
 
     i++; //progride a animação do Player
     if(i == 5)i = 0; //reseta a animação do player
@@ -341,7 +379,7 @@ int main(){
     
     // magica do piso dar a volta
     for(Cpiso = 0; Cpiso < Tam; Cpiso++) {
-      if(Piso[Cpiso].X<= -ALE) {
+      if(Piso[Cpiso].X <= -ALE) {
         srand(time(NULL));
         Piso[Cpiso].X = telaX + 500 + rand()%1000;
         Piso[Cpiso].Y = 250+rand() % 519;
@@ -350,4 +388,5 @@ int main(){
     if(GetKeyState(VK_END)&0x80)break;
 
 	}	
+  closegraph();
 }
