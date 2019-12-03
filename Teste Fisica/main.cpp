@@ -42,7 +42,7 @@ void PreparaImg(int Tam, unsigned char *Img, unsigned char *Msk) {
 struct coords{
 	int x,y;
 };
-coords plat[20], F, B1, B2;
+coords plat[20], F, B1, B2, espaco;
 
 void desenho(){
 	int Tam = imagesize(0, 0, 49, 49);
@@ -82,19 +82,29 @@ void desenho(){
 
 void criaPlat() {
 	
+//	for (int i=0;i<10;i++){
+//		plat[i].x= 200 + rand()%1920;
+//    	plat[i].y=50 +rand()%600;
+//      }
+//    for (int i=0;i<10;i++){
+//    	for (int j=0;j<10;j++){
+//    		if (i==j) j++;
+//			if (((plat[j].x <= plat[i].x <= plat[j].x + 230) && (plat[j].y <= plat[i].y <= plat[j].y +100)) || 
+//			((plat[j].x <= plat[i].x+230 <= plat[j].x + 230) && (plat[j].y <= plat[i].y+100<= plat[j].y +100)) ||
+//			((plat[j].x <= plat[i].x <= plat[j].x + 230) && (plat[j].y <= plat[i].y+100<= plat[j].y +100)) ||
+//			((plat[j].x <= plat[i].x+230 <= plat[j].x + 230) && (plat[j].y <= plat[i].y <= plat[j].y +100))){
+//				plat[i].x=200 + rand()%1920;
+//    			plat[i].y=50 + rand()%600;
+//			}
+//		}
+//		
+//	}
+	espaco.y = 75 ;
 	for (int i=0;i<10;i++){
-		plat[i].x= 200 + rand()%1920;
-    	plat[i].y=50 +rand()%600;
-      }
-    for (int i=0;i<10;i++){
-    	for (int j=0;j<10;j++){
-    		if (i==j) j++;
-			if (((plat[j].x <= plat[i].x <= plat[j].x + 230) && (plat[j].y <= plat[i].y <= plat[j].y +100)) || ((plat[j].x <= plat[i].x+230 <= plat[j].x + 230) && (plat[j].y <= plat[i].y+100<= plat[j].y +100))){
-				plat[i].x=200 + rand()%1920;
-    			plat[i].y=50 + rand()%600;
-			}
-		}
-		
+		plat[i].x = 200 + rand()%1700;;
+		plat[i].y = espaco.y;
+		espaco.y = espaco.y + 175;
+		if (espaco.y >= 750) espaco.y = 75;
 	}
 }
 
@@ -121,7 +131,8 @@ int main()  {
 	desenho();
 
   	
-  	
+  	espaco.y = 75;
+	espaco.x = 75;	
  	 while(tecla != ESC) {
     	
     	if (pg == 1) pg = 2; else pg=1;
@@ -163,22 +174,24 @@ int main()  {
     	
     	if(F.y <= 470 && onTop == false)
     		onAir = true;
+    		
     	//Movimentação do personagem
 //    	if(GetKeyState(VK_RIGHT)&0x80 && F.x < 200) F.x += dx;
 //    	if(GetKeyState(VK_LEFT)&0x80 && F.x > 100) F.x -= dx;
     	if (GetKeyState(VK_SPACE)&0x80 && onAir == false){
-    	 dy = -20;
-    	 onTop = false;
-    	 printf("Pulo\n");
-    	 
+    		dy = -20;
+    		onTop = false;
+			onAir = true;
 		} 
-		printf("%d\n", F.y);
 		
-		//Cria novas plataformas		
+		
+		//Cria novas plataformas
 		for (int i=0;i<10;i++){
-			if (plat[i].x + 230 < 0){
-				plat[i].x=1800;
-   				plat[i].y= 50 + rand()%600;
+			if (plat[i].x + 230 <= 0){
+					plat[i].x = 1920 + (rand()%500) ;
+					plat[i].y = espaco.y;
+					espaco.y = espaco.y + 175;
+					if (espaco.y >= 750) espaco.y = 75;
 			}
 		}
 		
@@ -229,7 +242,7 @@ int main()  {
 	    //Movimentação das plataformas para a direita
 	    for (int i=0;i<10;i++)
     	{
-    		plat[i].x -= 5;
+    		plat[i].x = plat[i].x - 5;
 
 	    }
 	    
@@ -257,5 +270,7 @@ int main()  {
 		free(T1M);
 		free(T2);
 		free(T2M);
+		free(T3);
+		free(T4);
 		return 0; 
 }
