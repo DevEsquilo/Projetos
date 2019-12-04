@@ -8,7 +8,7 @@ using namespace std;
 #define ESC    	27
 
 
-unsigned char *T1, *T1M,*T2, *T2M, *T3, *T4, *T5, *T5M;
+unsigned char *T1,*T2, *T3, *T4, *T5, *T5M,*T6, *T6M, *run[6], *runmask[6], *jump[3], *jumpmask[3];
 char tecla;
 int pg = 1;
 
@@ -42,8 +42,13 @@ void PreparaImg(int Tam, unsigned char *Img, unsigned char *Msk) {
 struct coords{
 	int x,y;
 };
+//F coordenadas do jogador
+//A coordenadas do Anubis
+//plat  coordenadas das plataformas
+//item coordenadas dos itens
+//B1 e B2 coordenadas do fundo
+coords plat[20], F, A, B1, B2, espaco, item[20];
 
-coords plat[20], F, B1, B2, espaco, item[20];
 
 void desenho(){
 	int Tam = imagesize(0, 0, 49, 49);
@@ -51,43 +56,111 @@ void desenho(){
 	int Tam3 = imagesize(0,0,1279,133);
 	int Tam4 = imagesize(0,0,1999,799);
 	int Tam5 = imagesize(0,0,40,74);
+	int Tam6 = imagesize(0,0,169,599);
+//	int sprtam = imagesize(0,0,234,224);
   	T1 = (unsigned char *)malloc(Tam);
-  	T1M = (unsigned char *)malloc(Tam);
   	T2 = (unsigned char *)malloc(Tam2);
-  	T2M = (unsigned char *)malloc(Tam2);
   	T3 = (unsigned char *)malloc(Tam3);
   	T4 = (unsigned char *)malloc(Tam4);
   	T5 = (unsigned char *)malloc(Tam5);
   	T5M = (unsigned char *)malloc(Tam5);
-
+  	T6 = (unsigned char *)malloc(Tam6);
+  	T6M = (unsigned char *)malloc(Tam6);
   	
+//	for (int i=0;i<6;i++){
+//		run[i] = (unsigned char *)malloc(sprtam);
+//  		runmask[i] = (unsigned char *)malloc(sprtam);
+//  	}
+//  	for (int i=0;i<3;i++){
+//		jump[i] = (unsigned char *)malloc(sprtam);
+//  		jumpmask[i] = (unsigned char *)malloc(sprtam);
+//  	}
   	
   	cleardevice();
   	setactivepage(10);
   	
-  	readimagefile("teste.bmp", 0, 0, 49, 49);
+  	readimagefile(".\\Sprites\\Personagem\\teste.bmp", 0, 0, 49, 49);
   	getimage(0, 0, 49, 49, T1); // captura para o ponteiro P
-    getimage(0, 0, 49, 49, T1M);
-  	PreparaImg(Tam, T1, T1M);
   	cleardevice();
   	
-  	readimagefile("plataforma_rect.bmp", 0, 0, 229, 99);
+  	readimagefile(".\\Sprites\\Objetos\\plataforma_rect.bmp", 0, 0, 229, 99);
   	getimage(0, 0, 229, 99, T2); // captura para o ponteiro P
   	cleardevice();
   	
-  	readimagefile("chao.bmp", 0,0,1279,133);
+  	readimagefile(".\\Sprites\\Objetos\\chao.bmp", 0,0,1279,133);
   	getimage(0,0,1279,133, T3); // captura para o ponteiro P
   	cleardevice();
   	
-  	readimagefile("background.bmp", 0,0,1999,799);
+  	readimagefile(".\\Sprites\\Fundo\\background.bmp", 0,0,1999,799);
   	getimage(0,0,1999,799, T4); // captura para o ponteiro P
   	cleardevice();
   	
-  	readimagefile("ankh.bmp", 0,0,40,74);
+  	readimagefile(".\\Sprites\\Objetos\\ankh.bmp", 0,0,40,74);
   	getimage(0,0,40,74, T5); // captura para o ponteiro P
   	getimage(0,0,40,74, T5M);
   	PreparaImg(Tam5, T5, T5M);
   	cleardevice();
+  	
+  	readimagefile(".\\Sprites\\Personagem\\anubis.bmp", 0,0,169,599);
+  	getimage(0,0,169,599, T6); // captura para o ponteiro P
+  	getimage(0,0,169,599, T6M);
+  	PreparaImg(Tam6, T6, T6M);
+  	cleardevice();
+  	
+//  	readimagefile(".\\Sprites\\Personagem\\run1.bmp", 0,0,234,224);
+//  	getimage(0,0,234,224, run[0]); // captura para o ponteiro P
+//  	getimage(0,0,234,224, runmask[0]);
+//  	PreparaImg(sprtam, run[0], runmask[0]);
+//  	cleardevice();
+//  	
+//  	readimagefile(".\\Sprites\\Personagem\\run2.bmp", 0,0,234,224);
+//  	getimage(0,0,234,224, run[1]); // captura para o ponteiro P
+//  	getimage(0,0,234,224, runmask[1]);
+//  	PreparaImg(sprtam, run[1], runmask[1]);
+//  	cleardevice();
+//  	
+//  	readimagefile(".\\Sprites\\Personagem\\run3.bmp", 0,0,234,224);
+//  	getimage(0,0,234,224, run[2]); // captura para o ponteiro P
+//  	getimage(0,0,234,224, runmask[2]);
+//  	PreparaImg(sprtam, run[2], runmask[2]);
+//  	cleardevice();
+//  	
+//  	readimagefile(".\\Sprites\\Personagem\\run4.bmp", 0,0,234,224);
+//  	getimage(0,0,234,224, run[3]); // captura para o ponteiro P
+//  	getimage(0,0,234,224, runmask[3]);
+//  	PreparaImg(sprtam, run[3], runmask[3]);
+//  	cleardevice();
+//  	
+//  	readimagefile(".\\Sprites\\Personagem\\run5.bmp", 0,0,234,224);
+//  	getimage(0,0,234,224, run[4]); // captura para o ponteiro P
+//  	getimage(0,0,234,224, runmask[4]);
+//  	PreparaImg(sprtam, run[4], runmask[4]);
+//  	cleardevice();
+//  	
+//  	readimagefile(".\\Sprites\\Personagem\\run6.bmp", 0,0,234,224);
+//  	getimage(0,0,234,224, run[5]); // captura para o ponteiro P
+//  	getimage(0,0,234,224, runmask[5]);
+//  	PreparaImg(sprtam, run[5], runmask[5]);
+//  	cleardevice();
+//  	
+//  	readimagefile(".\\Sprites\\Personagem\\jump1.bmp", 0,0,234,224);
+//  	getimage(0,0,234,224, jump[0]); // captura para o ponteiro P
+//  	getimage(0,0,234,224, jumpmask[0]);
+//  	PreparaImg(sprtam, jump[0], jumpmask[0]);
+//  	cleardevice();
+//  	
+//  	readimagefile(".\\Sprites\\Personagem\\jump2.bmp", 0,0,234,224);
+//  	getimage(0,0,234,224, jump[1]); // captura para o ponteiro P
+//  	getimage(0,0,234,224, jumpmask[1]);
+//  	PreparaImg(sprtam, jump[1], jumpmask[1]);
+//  	cleardevice();
+//  	
+//  	readimagefile(".\\Sprites\\Personagem\\jump3.bmp", 0,0,234,224);
+//  	getimage(0,0,234,224, jump[2]); // captura para o ponteiro P
+//  	getimage(0,0,234,224, jumpmask[2]);
+//  	PreparaImg(sprtam, jump[2], jumpmask[2]);
+//  	cleardevice();
+  	
 }
 
 void criaPlat() {
@@ -109,6 +182,7 @@ int main()  {
 	initwindow(1920, 800);
 	srand(time(0));
 	int pontuacao = 0;
+	int s = 0;
 	
 /* --------- Booleanas para verificação ---------  */
 	bool onAir = false;
@@ -117,6 +191,9 @@ int main()  {
 /* --------- Posição inicial do personagem ---------  */
 	F.x = 300;
 	F.y = 660;
+/* --------- Posição inicial do Anubis ---------  */
+	A.x = 0;
+	A.y = 110;
 /* --------- Posição inical do Background ---------  */
 	B1.x = 0;
 	B2.x = 1900;
@@ -206,7 +283,7 @@ int main()  {
 					espaco.y = espaco.y + 175;
 					if (espaco.y >= 750) espaco.y = 75;
 					item[i].x = plat[i].x + 95;
-					item[i].y = plat[i].y - 75
+					item[i].y = plat[i].y - 75;
 			}
 		}
 		
@@ -261,7 +338,10 @@ int main()  {
 			}
 			
 		}
-		
+/* --------- Colisão com Anubis ---------  */	
+		if (F.x <= A.x + 100){
+			printf("Perdeste");
+		}
 /* --------- Desenhos e movimentação ---------  */
     	//Desenho das plataformas
     	for (int i=0;i<10;i++)	
@@ -290,10 +370,18 @@ int main()  {
 		putimage(1280,700,T3, AND_PUT);
 		putimage(1280,700,T3, OR_PUT);	
 		
-		//Desenho do personagem
-		putimage(F.x, F.y, T1M, AND_PUT);
+		//Desenho do personagem e Anubis
+		//Jogador
+		putimage(F.x, F.y, T1, AND_PUT);
     	putimage(F.x, F.y, T1, OR_PUT);
-    	
+    	//Anubis
+    	putimage(A.x, A.y, T6M, AND_PUT);
+    	putimage(A.x, A.y, T6, OR_PUT);
+
+//    	putimage(F.x, F.y, runmask[s], AND_PUT);
+//    	putimage(F.x, F.y, run[s], OR_PUT);
+//    	s++;
+//    	if (s == 5) s = 0;
     	
   		setvisualpage(pg);
   		delay(50);
@@ -304,9 +392,7 @@ int main()  {
 }
 		closegraph();	
 		free(T1);
-		free(T1M);
 		free(T2);
-		free(T2M);
 		free(T3);
 		free(T4);
 		free(T5);
