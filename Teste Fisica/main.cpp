@@ -115,7 +115,7 @@ int main()  {
 	bool onTop = false;
 	
 	
-	F.x = 150;
+	F.x = 300;
 	F.y = 660;
 	
 	B1.x = 0;
@@ -127,7 +127,7 @@ int main()  {
 	
 	int h=300;
     float dx=5,dy=0;
-	
+	float px = -5;
 	desenho();
 
   	
@@ -166,6 +166,7 @@ int main()  {
 		dy+=1;
     	F.y+=dy;
     	
+    	
     	if (F.y >= 660){
     		F.y = 660;
     		onAir = false;
@@ -178,11 +179,20 @@ int main()  {
     	//Movimentação do personagem
 //    	if(GetKeyState(VK_RIGHT)&0x80 && F.x < 200) F.x += dx;
 //    	if(GetKeyState(VK_LEFT)&0x80 && F.x > 100) F.x -= dx;
-    	if (GetKeyState(VK_SPACE)&0x80 && onAir == false){
+    	if ((GetKeyState(VK_SPACE)&0x80 && onAir == false) || (GetKeyState(VK_UP)&0x80 && onAir == false)){
     		dy = -20;
     		onTop = false;
 			onAir = true;
 		} 
+		
+		if (GetKeyState(VK_DOWN)&0x80 && onAir == true){
+			dy += 2;	
+		}
+		
+		if (GetKeyState(VK_SHIFT)&0x80){
+			printf("X = %d\n", F.x);
+			printf("Y = %d\n", F.y);
+		}
 		
 		
 		//Cria novas plataformas
@@ -204,23 +214,30 @@ int main()  {
       			onTop = true;
       			
 			  }
+			
 					
       }
       	
       	//Colisão com a base das plataformas
       	for (int i=0;i<10;i++){
-      		if ((F.y <= plat[i].y+100 && (F.x+50>=plat[i].x) && (F.x<=plat[i].x+230)) && (F.y+50>=plat[i].y) && (dy<0) ){
-      			
-			  }
+      		if ((F.y <= plat[i].y+100) && (F.x+50>=plat[i].x) && (F.x<=plat[i].x+230) && (F.y+50>=plat[i].y) && (dy<0)){ 
+      			if (F.y > plat[i].y + 80 ){
+      				F.y = plat[i].y + 101;
+      				dy = 3;
+      				
+      			}
+			}
       		
-		  }
+		}
 		
 		//Colisão com a borda da plataforma
 		for (int i=0;i<10;i++){
-			if ((F.x + 50 > plat[i].x) && (F.x < plat[i].x+230) && (F.y > plat[i].y) && (F.y < plat[i].y+100)){
-				F.x = plat[i].x - 50;
-			}
+			if (((F.x + 50 > plat[i].x) && (F.y > plat[i].y) && (F.y < plat[i].y+100))){
+				if ((F.x + 50 < plat[i].x + 230)){
+					F.x = plat[i].x - 50;
+				}
 
+			}
 		}
 		
 //		for (int i=0;i<10;i++){
@@ -242,7 +259,7 @@ int main()  {
 	    //Movimentação das plataformas para a direita
 	    for (int i=0;i<10;i++)
     	{
-    		plat[i].x = plat[i].x - 5;
+    		plat[i].x += px;
 
 	    }
 	    
@@ -273,4 +290,5 @@ int main()  {
 		free(T3);
 		free(T4);
 		return 0; 
+
 }
