@@ -8,7 +8,7 @@ using namespace std;
 #define ESC    	27
 
 
-unsigned char *T1, *T1M,*T2, *T2M, *T3, *T4;
+unsigned char *T1, *T1M,*T2, *T2M, *T3, *T4, *T5, *T5M;
 char tecla;
 int pg = 1;
 
@@ -42,19 +42,23 @@ void PreparaImg(int Tam, unsigned char *Img, unsigned char *Msk) {
 struct coords{
 	int x,y;
 };
-coords plat[20], F, B1, B2, espaco;
+
+coords plat[20], F, B1, B2, espaco, item[20];
 
 void desenho(){
 	int Tam = imagesize(0, 0, 49, 49);
 	int Tam2 = imagesize(0, 0, 229, 99);
 	int Tam3 = imagesize(0,0,1279,133);
 	int Tam4 = imagesize(0,0,1999,799);
+	int Tam5 = imagesize(0,0,40,74);
   	T1 = (unsigned char *)malloc(Tam);
   	T1M = (unsigned char *)malloc(Tam);
   	T2 = (unsigned char *)malloc(Tam2);
   	T2M = (unsigned char *)malloc(Tam2);
   	T3 = (unsigned char *)malloc(Tam3);
   	T4 = (unsigned char *)malloc(Tam4);
+  	T5 = (unsigned char *)malloc(Tam5);
+  	T5M = (unsigned char *)malloc(Tam5);
 
   	
   	
@@ -78,27 +82,15 @@ void desenho(){
   	readimagefile("background.bmp", 0,0,1999,799);
   	getimage(0,0,1999,799, T4); // captura para o ponteiro P
   	cleardevice();
+  	
+  	readimagefile("ankh.bmp", 0,0,40,74);
+  	getimage(0,0,40,74, T5); // captura para o ponteiro P
+  	getimage(0,0,40,74, T5M);
+  	PreparaImg(Tam5, T5, T5M);
+  	cleardevice();
 }
 
 void criaPlat() {
-	
-//	for (int i=0;i<10;i++){
-//		plat[i].x= 200 + rand()%1920;
-//    	plat[i].y=50 +rand()%600;
-//      }
-//    for (int i=0;i<10;i++){
-//    	for (int j=0;j<10;j++){
-//    		if (i==j) j++;
-//			if (((plat[j].x <= plat[i].x <= plat[j].x + 230) && (plat[j].y <= plat[i].y <= plat[j].y +100)) || 
-//			((plat[j].x <= plat[i].x+230 <= plat[j].x + 230) && (plat[j].y <= plat[i].y+100<= plat[j].y +100)) ||
-//			((plat[j].x <= plat[i].x <= plat[j].x + 230) && (plat[j].y <= plat[i].y+100<= plat[j].y +100)) ||
-//			((plat[j].x <= plat[i].x+230 <= plat[j].x + 230) && (plat[j].y <= plat[i].y <= plat[j].y +100))){
-//				plat[i].x=200 + rand()%1920;
-//    			plat[i].y=50 + rand()%600;
-//			}
-//		}
-//		
-//	}
 	espaco.y = 75 ;
 	for (int i=0;i<10;i++){
 		plat[i].x = 200 + rand()%1700;;
@@ -107,41 +99,52 @@ void criaPlat() {
 		if (espaco.y >= 750) espaco.y = 75;
 	}
 }
-
+void criaItem(){
+	for (int i=0;i<10;i++){
+		item[i].x = plat[i].x + 95;
+		item[i].y = plat[i].y - 75;
+	}
+}
 int main()  { 
 	initwindow(1920, 800);
 	srand(time(0));
+	int pontuacao = 0;
+	
+/* --------- Booleanas para verificação ---------  */
 	bool onAir = false;
 	bool onTop = false;
 	
-	
+/* --------- Posição inicial do personagem ---------  */
 	F.x = 300;
 	F.y = 660;
-	
+/* --------- Posição inical do Background ---------  */
 	B1.x = 0;
 	B2.x = 1900;
 	
-	//Define localização das plataformas
+/* --------- Posição das plataformas e dos itens ---------  */
 	criaPlat();
+	criaItem();
 
-	
-	int h=300;
+/* --------- Variáveis para auxiliar na física ---------  */
     float dx=5,dy=0;
 	float px = -5;
+/* --------- Preparas as imagens ---------  */
 	desenho();
 
-  	
+/* --------- Espaçamento minimo entre as plataformas ---------  */
   	espaco.y = 75;
 	espaco.x = 75;	
  	 while(tecla != ESC) {
     	
     	if (pg == 1) pg = 2; else pg=1;
     	setactivepage(pg);
+    	
+    	pontuacao += 10;
 		cleardevice();
 		
 		setbkcolor(WHITE);
 		
-		//Background e sua movimentação
+/* --------- Background e movimentação ---------  */
 		putimage(B1.x,0,T4, AND_PUT);
 		putimage(B1.x,0,T4, OR_PUT);
 //		putimage(B2.x,0,T4, AND_PUT);
@@ -162,7 +165,7 @@ int main()  {
 		
 		
 		
-		//Gravidade do personagem		
+/* --------- Física do personagem ---------  */	
 		dy+=1;
     	F.y+=dy;
     	
@@ -176,7 +179,7 @@ int main()  {
     	if(F.y <= 470 && onTop == false)
     		onAir = true;
     		
-    	//Movimentação do personagem
+/* --------- Movimentação do personagem ---------  */
 //    	if(GetKeyState(VK_RIGHT)&0x80 && F.x < 200) F.x += dx;
 //    	if(GetKeyState(VK_LEFT)&0x80 && F.x > 100) F.x -= dx;
     	if ((GetKeyState(VK_SPACE)&0x80 && onAir == false) || (GetKeyState(VK_UP)&0x80 && onAir == false)){
@@ -194,14 +197,16 @@ int main()  {
 			printf("Y = %d\n", F.y);
 		}
 		
-		
-		//Cria novas plataformas
+/* --------- Plataforma ---------  */
+		//Cria novas plataformas e itens
 		for (int i=0;i<10;i++){
 			if (plat[i].x + 230 <= 0){
 					plat[i].x = 1920 + (rand()%500) ;
 					plat[i].y = espaco.y;
 					espaco.y = espaco.y + 175;
 					if (espaco.y >= 750) espaco.y = 75;
+					item[i].x = plat[i].x + 95;
+					item[i].y = plat[i].y - 75
 			}
 		}
 		
@@ -246,9 +251,18 @@ int main()  {
 //			}
 //
 //		}
+
+/* --------- Items ---------  */	
+		for (int i=0;i<10;i++){
+			if (((F.x+50 > item[i].x) && (F.y > item[i].y) && (F.y < item[i].y+40)) || ((F.x+45>item[i].x) && (F.x+15<item[i].x+40) && (F.y+50>item[i].y ) && (F.y+25<item[i].y+75) && (dy>0))){
+				item[i].x = -100;
+				item[i].y = -100;
+				pontuacao += 100;
+			}
+			
+		}
 		
-		
-		
+/* --------- Desenhos e movimentação ---------  */
     	//Desenho das plataformas
     	for (int i=0;i<10;i++)	
     	{
@@ -256,13 +270,19 @@ int main()  {
     		putimage(plat[i].x,plat[i].y,T2, OR_PUT);
     	
 	    }
-	    //Movimentação das plataformas para a direita
+	    //Desenho dos Items
+	    for (int i=0;i<10;i++)	
+    	{
+    		putimage(item[i].x,item[i].y,T5M, AND_PUT);
+    		putimage(item[i].x,item[i].y,T5, OR_PUT);
+    	
+	    }
+	    //Movimentação das plataformas e itens para a direita
 	    for (int i=0;i<10;i++)
     	{
     		plat[i].x += px;
-
+			item[i].x += px;
 	    }
-	    
 
 		//Desenho do chão
 		putimage(0,700,T3, AND_PUT);
@@ -289,6 +309,8 @@ int main()  {
 		free(T2M);
 		free(T3);
 		free(T4);
+		free(T5);
+		free(T5M);
 		return 0; 
 
 }
