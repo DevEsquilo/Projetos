@@ -22,6 +22,8 @@
   int largurachao = 400;
   int tela = (1366, 768);
   int pg = 0;
+
+
 //}
 
 //Defines{
@@ -43,12 +45,15 @@
   unsigned char *maskP[4];
   unsigned char *chon[1];
   unsigned char *chonP[1];
+  unsigned char *anubis[1];
+  unsigned char *anubisP[1];
 //}
 
 //voids{
   void *background;
   void *bk;
   void *menu;
+  void *button[3];
 //}
 
 char t = 0;
@@ -126,6 +131,8 @@ void img(piso Piso)
   Piso.size = imagesize(0 ,0 , 399,160);
   int size = imagesize(0, 0, 234,224);
   int sizebk = imagesize(0,0,1366, 768);
+  int sizeA = imagesize(0,0,700,712);
+  int sizebutton = imagesize(0,0,719, 294);
 
   //correr1
   readimagefile(".\\assets\\correr1.bmp", 0, 0, 234,224);
@@ -207,6 +214,15 @@ void img(piso Piso)
   getimage(0, 0, 399,160, chonP[0]);
   PreparaImg(Piso.size, chon[0], chonP[0]);
 
+  //anubis
+  readimagefile(".\\assets\\anubis.bmp", 0, 0, 450, 468);
+  anubis[0] = (unsigned char *)malloc(sizeA);
+  anubisP[0] = (unsigned char *)malloc(sizeA);
+  getimage(0, 0, 450, 468, anubis[0]);
+  getimage(0, 0, 450, 468, anubisP[0]);
+  PreparaImg(sizeA, anubis[0], anubisP[0]);
+  
+
   readimagefile(".\\assets\\fundo.bmp", 0, 0, telaX, telaY);
   bk = (void *)malloc(sizebk);
   getimage(0, 0, telaX, telaY, bk);
@@ -214,6 +230,17 @@ void img(piso Piso)
   readimagefile(".\\assets\\menu.bmp", 0, 0, telaX, telaY);
   menu = (void*)malloc(sizebk);
   getimage(0, 0, telaX, telaY, menu);
+
+  
+  button[0] = (void *)malloc(sizebutton);
+  button[1] = (void *)malloc(sizebutton);
+  button[2] = (void *)malloc(sizebutton);
+  readimagefile(".\\assets\\play.bmp", 0, 0, 350, 100);
+  getimage(0, 0, 350, 100, button[0]);
+  readimagefile(".\\assets\\opcoes.bmp", 0, 0, 350, 100);
+  getimage(0, 0, 350, 100, button[1]);
+  readimagefile(".\\assets\\sair.bmp", 0, 0, 350, 100);
+  getimage(0, 0, 350, 100, button[2]);
 
   cleardevice();
 }
@@ -229,10 +256,16 @@ void teclado()
 
 void pausa()
 { 
+  int buttonX = telaX/3+60;
+  int buttonY = telaY/3;
+  int buttonY1 = telaY/3 + telaY/12 + 50;
+  int buttonY2 = telaY/3 + telaY/12*(2) + 100;
   setbkcolor(RGB(194,178,128));
   if(pause){
     putimage(0, 0, menu, 0);
-
+    putimage(buttonX,buttonY, button[0], 0);
+    putimage(buttonX,buttonY1, button[1], 0);
+    putimage(buttonX,buttonY2, button[2], 0);
     while(pause){
       teclado();
     }
@@ -292,6 +325,7 @@ int main(){
   setlocale(LC_ALL,"Portuguese");
   int Size;
   int x = 0;
+  int YA = 20;
   float xtempo, ytempo;
   clock_t time_req;
   piso *Piso;
@@ -307,7 +341,9 @@ int main(){
 
   initwindow(telaX,telaY,"",-3,-3);
   
-  setbkcolor(RGB(195,195,195));
+  setbkcolor(RGB(0,0,0));
+  settextstyle(TRIPLEX_FONT, HORIZ_DIR,40);
+  outtextxy(telaX/3,telaY/11, (char*)"carregando...");
   
   Player.X = 300, Player.Y = 400;
 
@@ -315,8 +351,10 @@ int main(){
   Piso = (piso*)realloc(Piso, sizeof(piso)* 12);
   
   for(x = 0; x < Tam; x++){
-  Piso[x].X = rand() %telaX+750, telaX;
-  Piso[x].Y = rand() %telaY, 100;
+    Piso[x].X = telaX+ (rand() % 100 * rand() % 100 + rand() % 4000);
+    Piso[x].Y = rand() %telaY, 100;
+    srand(time(NULL));
+    delay(900);
   }
   setactivepage(1);
   
@@ -328,71 +366,71 @@ int main(){
   // abre o arquivo em mp3 e coloca um apelido nele "bk"  \"nome do aquivo.extensão"\ -> ** quantida de vezes q vai tocar  -> 
   mciSendString("open .\\sons\\bk.mp3 type mpegvideo alias bk", NULL, 0, NULL);
   
-
   PlaySound(NULL, 0,0);
   ALE = 900+ (rand()%101);
-  settextstyle(TRIPLEX_FONT, HORIZ_DIR,20);
+  
   //intro();
   cleardevice();
   
   while(1){
-    
     teclado();
-  	//pausa();
+  	pausa();
     setbkcolor(RGB(195,195,195));
     //mciSendString("play bk notify repeat", NULL, 0 ,0);
     /*
     if(GetKeyState(VK_SPACE)&0x80) {
-      mciSendString("close som", NULL, 0, 0);    // p�ra a reprodu��o do alias fundo
+      mciSendString("close som", NULL, 0, 0);    // para a reproducao do alias fundo
       mciSendString("open .\\sons\\sfx3.mp3 type MPEGVideo alias som", NULL, 0, 0); 
       mciSendString("play som", NULL, 0, 0);
     }
     */
-    if(GetKeyState(VK_SPACE)&0x80) delay(800);
+    
     if(pg == 2)pg = 1;else pg = 2;
     setactivepage(pg);
     cleardevice();
     
-/*
-    //Fundo da tela
-    putimage(bkg.X0, 0, bk, 0);
+//Fundo da tela{
     putimage(bkg.X1, 0, bk, 0);
+    putimage(bkg.X0, 0, bk, 0);
     bkg.X0-=4;
     bkg.X1-=4;
-    if(bkg.X0 + bkg.largura <= 5)bkg.X0 = bkg.largura;
-    if(bkg.X1 + bkg.largura <= 5)bkg.X1 = bkg.largura;
-*/
-    //desenha os chaos
+    if(bkg.X0 + bkg.largura < 0)bkg.X0 = bkg.largura;
+    if(bkg.X1 + bkg.largura < 0)bkg.X1 = bkg.largura;
+//}
+
+//desenha os chaos{
     for(Cpiso = 0; Cpiso < Tam; Cpiso++) { //Faz o desenhos dos pisos
       putimage(Piso[Cpiso].X, Piso[Cpiso].Y, chonP[0], AND_PUT);
       putimage(Piso[Cpiso].X, Piso[Cpiso].Y, chon[0], OR_PUT);
     }
-    /*d
+//}    
+
+    /*
     */
-    //desenha o personagem
+
+//desenha o personagem{
     putimage(Player.X, Player.Y, mask[i], AND_PUT);
     putimage(Player.X, Player.Y, correr[i], OR_PUT);
-
-
+    putimage(0,YA,anubisP[0], AND_PUT);
+    putimage(0,YA,anubis[0], OR_PUT);
     i++; //progride a animação do Player
     if(i == 5)i = 0; //reseta a animação do player
-    
+//}
+
+
+    YA = 100+rand()% 100;    
     setvisualpage(pg);
-
-    if(GetKeyState(VK_UP)&0x80&&(pulo))Player.Y -=120;
-
-
-
-
     delay(80); // FPS
 
-
- 
+//TeclasGet{
+    if(GetKeyState(VK_UP)&0x80&&(pulo))Player.Y -=120;
     if(GetKeyState(VK_LEFT)&0x80)  Player.X -= 20;
     if(GetKeyState(VK_RIGHT)&0x80) Player.X += 20;
-    
+    if(GetKeyState(VK_END)&0x80)break;
+    if(GetKeyState(VK_SPACE)&0x80) delay(8000);
+//}
+
     for(Cpiso = 0; Cpiso < Tam; Cpiso++)Piso[Cpiso].X-=20;// movimentação linear do piso
-    
     // magica do piso dar a volta
     for(Cpiso = 0; Cpiso < Tam; Cpiso++) {
       if(Piso[Cpiso].X <= -ALE) {
@@ -401,8 +439,7 @@ int main(){
         Piso[Cpiso].Y = 250+rand() % 519;
       }
     }
-    if(GetKeyState(VK_END)&0x80)break;
-
-	}	
+    
+  }	
   closegraph();
 }
